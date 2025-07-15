@@ -65,16 +65,15 @@ static void	exec_pipeline(t_cmd **tokens, t_pipedata *p, char **env)
 	{
 		p->cmd_found = false;
 		if (i < p->pipe_count && pipe(p->pipefd[i]) < 0)
-		{
-			handle_failure(p, "pipe");
-			return ;
-		}
-		reset_sig();
+			return (handle_failure(p, "pipe"));
 		if (p->pipe_count == 0 && check_for_builtin(tokens, p->pipe_count))
 			exec_builtin(tokens, p, env);
-		else
+		else 
+		{
+			reset_sig();
 			if (setup_child(tokens, p, env, i) < 0)
 				return ;
+		}
 		if (p->pipe_count > 0)
 			find_next_cmd_index(tokens, p);
 		if (i > 0)
