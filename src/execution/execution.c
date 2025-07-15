@@ -46,6 +46,7 @@ static void	exec_builtin(t_cmd **tokens, t_pipedata *p, char **env)
 	if (setup_cmd_to_execute(tokens, p) < 0)
 		return ;
 	child_process(tokens, p, env);
+	ignore();
 }
 
 void	close_pipe_pair(t_pipedata *p, int i)
@@ -106,4 +107,5 @@ void	execution(t_cmd **tokens, char **env)
 	if (p->pipe_count > 0)
 		init_pipes(p);
 	exec_pipeline(tokens, p, env);
+	catcher();
 }
