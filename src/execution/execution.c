@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:20:20 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/15 18:12:37 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/16 01:12:46 by jpelline         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ int	setup_child(t_cmd **tokens, t_pipedata *p, char **env, int i)
 	p->is_child = true;
 	p->is_builtin = false;
 	p->has_out_redirect = false;
+	reset_sig();
 	p->pids[i] = fork();
 	if (p->pids[i] < 0)
 	{
@@ -46,7 +47,6 @@ static void	exec_builtin(t_cmd **tokens, t_pipedata *p, char **env)
 	if (setup_cmd_to_execute(tokens, p) < 0)
 		return ;
 	child_process(tokens, p, env);
-	ignore();
 }
 
 void	close_pipe_pair(t_pipedata *p, int i)
@@ -68,12 +68,8 @@ static void	exec_pipeline(t_cmd **tokens, t_pipedata *p, char **env)
 			return (handle_failure(p, "pipe"));
 		if (p->pipe_count == 0 && check_for_builtin(tokens, p->pipe_count))
 			exec_builtin(tokens, p, env);
-		else 
-		{
-			reset_sig();
-			if (setup_child(tokens, p, env, i) < 0)
-				return ;
-		}
+		else if (setup_child(tokens, p, env, i) < 0)
+			return ;
 		if (p->pipe_count > 0)
 			find_next_cmd_index(tokens, p);
 		if (i > 0)
