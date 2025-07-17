@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+         #
+#    By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/03 18:36:06 by jpelline          #+#    #+#              #
-#    Updated: 2025/07/13 16:36:25 by erantala         ###   ########.fr        #
+#    Updated: 2025/07/16 23:14:58 by jpelline         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ NAME			:= minishell_standard
 CC				:= cc
 
 # Compiler flags
-CFLAGS			:= -Wall -Wextra -Werror
+CFLAGS			:=
 DEBUG_FLAGS		:= -g3 -fsanitize=address -fsanitize=undefined
 OPTFLAGS		:= -O2
 
@@ -149,8 +149,6 @@ PROGRESS_FILE		:= $(OBJ_DIR)/.progress
 # Utility variables for build optimization
 LATEST_SRC			:= $(shell find src -name "*.c" | \
 							xargs ls -t 2>/dev/null | head -1)
-OBJ_FILES_EXIST		:= $(shell [ -n "$(wildcard $(OBJ_DIR)/*.o)" ] \
-							&& echo yes)
 
 # Looking for updated header files
 LATEST_HEADER		:= $(shell find include $(LIBFT_DIR)/include \
@@ -170,7 +168,7 @@ is_up_to_date = \
 	[ "$(PROGRAM_NAME)" -nt $(LIBFT) ] && \
 	( [ -z "$(LATEST_LIBFT_SRC)" ] || [ "$(PROGRAM_NAME)" -nt \
 	$(LATEST_LIBFT_SRC) ] ) && \
-	[ "$(OBJ_FILES_EXIST)" = "yes" ]
+	[ -z "$$(find $(SRC_DIR) -name '*.c' -newer $(NAME) 2>/dev/null)" ]
 
 # ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ BUILD TARGETS ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ #
 

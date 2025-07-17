@@ -6,7 +6,7 @@
 /*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 22:50:24 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/15 18:12:00 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/15 16:06:13 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int	check_signal(void)
 	if (g_sig == SIGINT)
 	{
 		rl_done = 1;
-		rl_on_new_line();
 		return (1);
 	}
 	return (0);
@@ -27,7 +26,6 @@ static void	heredoc_handler(int sig)
 {
 	if (sig == SIGINT)
 		g_sig = SIGINT;
-	write(1, "\n", 1);
 }
 
 void	heredoc_signal(void)

@@ -6,7 +6,7 @@
 /*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 02:49:43 by erantala          #+#    #+#             */
-/*   Updated: 2025/07/15 18:13:15 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/17 18:14:50 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,21 +62,21 @@ char	*take_input(t_data *data)
 	prompt = get_prompt();
 	while (1)
 	{
-		dup2(data->stdin, STDIN_FILENO);
+		if (!isatty(STDIN_FILENO))
+			dup2(data->stdin, STDIN_FILENO);
 		input = readline(prompt);
 		if (!input)
 			ft_exit("exit", 0);
 		if (input[0] != 0)
 		{
 			ret = mini_strdup(input);
-			if (check_quotes(input))
+			free (input);
+			if (check_quotes(ret))
 			{
 				add_history(ret);
-				free(input);
 				replace_export("?=2");
 				return (NULL);
 			}
-			free(input);
 			return (ret);
 		}
 	}
@@ -92,7 +92,8 @@ int	check_quotes(char *s)
 	{
 		if (s[i] == '"' || s[i] == '\'')
 		{
-			quote = s[i++];
+			quote = s[i];
+			i++;
 			while (s[i] && s[i] != quote)
 				i++;
 			if (!s[i])

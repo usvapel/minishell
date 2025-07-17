@@ -6,7 +6,7 @@
 /*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 23:47:36 by erantala          #+#    #+#             */
-/*   Updated: 2025/07/15 18:01:25 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/14 15:43:00 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	here_two(t_vector *tokens, int count, t_data *data)
 	size_t	i;
 
 	i = 0;
-	while (count > 0 && data->valid == 1)
+	while (count > 0)
 	{
 		curr = tokens->data[i];
 		next = tokens->data[i + 1];
@@ -56,9 +56,7 @@ void	here_two(t_vector *tokens, int count, t_data *data)
 		{
 			next->s = create_here_prompt(tokens, i, count);
 			if (!data->valid)
-			{
 				return ;
-			}
 			next->t = FILES;
 			count--;
 		}

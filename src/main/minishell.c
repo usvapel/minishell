@@ -6,7 +6,7 @@
 /*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 18:29:23 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/15 18:14:01 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/17 00:29:35 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static void	parse_and_execute(t_data *data)
 	while (true)
 	{
 		data->valid = 1;
+		catcher();
 		input = take_input(data);
 		if (input)
 		{

@@ -6,7 +6,7 @@
 /*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:02:28 by erantala          #+#    #+#             */
-/*   Updated: 2025/07/15 18:08:10 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/17 00:28:17 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ void	init_data(char **env)
 	data->heredocs = new_vector(2);
 	data->last = EMPTY;
 	data->check_build = 1;
-	data->stdin = dup(STDIN_FILENO);
 	array_to_vec(data->env_vec, (void **)env);
 	add_elem(data->env_vec, mini_strdup("?=0"));
 	if (ft_strcmp(find_export("OLDPWD"), "") == 0)
 		export("OLDPWD");
 	init_export();
+	data->stdin = dup(STDIN_FILENO);
 }
 
 char	*get_pwd(void)
