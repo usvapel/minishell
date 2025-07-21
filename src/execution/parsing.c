@@ -6,7 +6,7 @@
 /*   By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 13:28:50 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/17 01:55:53 by jpelline         ###   ########.fr       */
+/*   Updated: 2025/07/19 23:58:33 by jpelline         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,9 @@ static int	find_next_cmd_in_tokens(t_cmd **tokens, t_pipedata *p)
 	return (0);
 }
 
-static size_t	get_cmd_array_size(t_cmd **tokens, t_pipedata *p, char **split)
+static size_t	get_cmd_array_size(t_cmd **tokens, t_pipedata *p)
 {
 	size_t	total_args;
-	size_t	arg_i;
 	size_t	tok_i;
 	size_t	skip;
 
@@ -104,7 +103,9 @@ static void	additional_arguments_to_cmd(t_cmd **tokens, t_pipedata *p,
 		size_t arg_i, size_t tok_i)
 {
 	tok_i = p->cmd_index;
-	if (tokens[tok_i] && (tokens[tok_i]->next == FILES
+	tok_i = skip_redirects(tokens, tok_i + 1);
+	if (tok_i == p->cmd_index && tokens[tok_i]
+		&& (tokens[tok_i]->next == FILES
 			|| tokens[tok_i]->next == HERE_DOC
 			|| tokens[tok_i]->next == BUILTIN
 			|| tokens[tok_i]->next == STRING))
@@ -125,7 +126,7 @@ int	setup_cmd_to_execute(t_cmd **tokens, t_pipedata *p)
 	if (find_next_cmd_in_tokens(tokens, p) < 0)
 		return (-1);
 	split = mini_split(tokens[p->cmd_index]->str, ' ');
-	total_args = get_cmd_array_size(tokens, p, split);
+	total_args = get_cmd_array_size(tokens, p);
 	p->cmd_args = arena_malloc((total_args) * sizeof(char *));
 	arg_i = 0;
 	tok_i = 0;

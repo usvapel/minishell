@@ -6,7 +6,7 @@
 /*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 17:07:45 by erantala          #+#    #+#             */
-/*   Updated: 2025/07/16 17:26:17 by erantala         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:24:00 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	ft_exit(char *s, unsigned char code)
 
 	i = 0;
 	data = get_data();
+	close(data->stdin);
 	rl_clear_history();
 	while (i < data->fds->count)
 	{
@@ -44,9 +45,8 @@ void	ft_exit(char *s, unsigned char code)
 		safe_close(&*fd);
 		i++;
 	}
-	s = "";
-	if (!s || s[0])
-		ft_fprintf(STDOUT_FILENO, "%s\n", s);
+	if (!s || ft_strcmp("", s) != 0)
+		ft_fprintf(STDERR_FILENO, "%s\n", s);
 	free_arenas();
 	exit(code);
 }
