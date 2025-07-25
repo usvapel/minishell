@@ -3,23 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   child.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 20:49:29 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/13 23:47:37 by jpelline         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:03:45 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	safe_execve(t_pipedata *p, char *path, char **argv, char **env)
-{
-	t_stat	st;
-
-	if (fstat(STDOUT_FILENO, &st) == -1 && errno == EBADF)
-		ft_exit_child(p, NULL, 1);
-	return (execve(path, argv, env));
-}
 
 static void	execute_child_builtin(t_cmd **tokens, t_pipedata *p)
 {
@@ -61,6 +52,19 @@ static void	close_unused_child_fds(t_pipedata *p, int *child_stdin,
 		safe_close(&p->outfile);
 }
 
+static void	setup_middle_pipe(t_pipedata *p, int *child_stdin,
+		int *child_stdout)
+{
+	if (p->has_in_redirect)
+		*child_stdin = p->infile;
+	else
+		*child_stdin = p->pipefd[p->pipe_index - 1][READ];
+	if (p->has_out_redirect)
+		*child_stdout = p->outfile;
+	else
+		*child_stdout = p->pipefd[p->pipe_index][WRITE];
+}
+
 static void	setup_read_and_write_ends(t_pipedata *p, int *child_stdin,
 		int *child_stdout)
 {
@@ -81,14 +85,14 @@ static void	setup_read_and_write_ends(t_pipedata *p, int *child_stdin,
 	}
 	else if (p->pipe_index == p->pipe_count)
 	{
-		*child_stdin = p->pipefd[p->pipe_index - 1][READ];
+		if (p->has_in_redirect)
+			*child_stdin = p->infile;
+		else
+			*child_stdin = p->pipefd[p->pipe_index - 1][READ];
 		*child_stdout = p->outfile;
 	}
 	else
-	{
-		*child_stdin = p->pipefd[p->pipe_index - 1][READ];
-		*child_stdout = p->pipefd[p->pipe_index][WRITE];
-	}
+		setup_middle_pipe(p, child_stdin, child_stdout);
 }
 
 void	child_process(t_cmd **tokens, t_pipedata *p, char **env)

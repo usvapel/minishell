@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   functions.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 19:21:07 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/18 01:19:27 by jpelline         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:04:19 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ t_vector	*creator(char *s, size_t len, size_t i, t_data *data);
 char		*quoted_token(char *s, char quote, size_t *i, t_type *last);
 char		*unquoted_expan(char *s, size_t *pos);
 t_token		*check_type(t_token *new, t_data *data, size_t *i, char *s);
+t_cmd		*split_multi(t_data *data, t_cmd *cmd, size_t *i);
 
 // --- Command creator ---
 t_vector	*create_commands(t_vector *tokens);
@@ -32,7 +33,7 @@ t_cmd		*make_cmd_spc(t_vector *tokens, size_t *i, t_data *data);
 t_cmd		*make_cmd_str(t_vector *tokens, size_t *i, t_data *data);
 
 // --- Input ---
-void		non_interactive(void);
+void		non_interactive(t_data *data);
 char		*get_input(char **argv, int argc);
 char		*take_input(t_data *data);
 int			check_quotes(char *s);
@@ -178,13 +179,16 @@ int			path_exists(void);
 // --- Execution --- Token/Command Parsing & Navigation ---
 void		find_next_cmd_index(t_cmd **tokens, t_pipedata *p);
 size_t		skip_redirects(t_cmd **tokens, size_t tok_i);
-bool		check_for_builtin(t_cmd **tokens, int pipe_count);
+bool		check_for_builtin(t_cmd **tokens);
+int			only_heredocs(t_cmd **tokens);
+int			only_empty_export(t_cmd **tokens);
 
 // --- Execution --- File & Redirect Handling ---
 int			open_handler(t_pipedata *p, const char *path);
 int			open_file(t_cmd **tokens, t_pipedata *p, int settings);
 int			check_for_redirects(t_cmd **tokens, t_pipedata *p);
 int			check_all_redir(char *s, size_t len);
+int			safe_execve(t_pipedata *p, char *path, char **argv, char **env);
 
 // --- Execution --- Error & Failure Handling ---
 void		handle_failure(t_pipedata *p, char *str);

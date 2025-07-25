@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: erantala <erantala@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 16:20:20 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/17 01:55:23 by jpelline         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:03:55 by erantala         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	setup_child(t_cmd **tokens, t_pipedata *p, char **env, int i)
 		if (check_for_redirects(tokens, &local_p) < 0)
 			ft_exit_child(p, NULL, 1);
 		if (setup_cmd_to_execute(tokens, &local_p) < 0)
-			ft_exit_child(p, NULL, 1);
+			ft_exit_child(p, NULL, 0);
 		child_process(tokens, &local_p, env);
 	}
 	ignore();
@@ -69,7 +69,8 @@ static void	exec_pipeline(t_cmd **tokens, t_pipedata *p, char **env)
 		p->cmd_found = false;
 		if (i < p->pipe_count && pipe(p->pipefd[i]) < 0)
 			return (handle_failure(p, "pipe"));
-		if (p->pipe_count == 0 && check_for_builtin(tokens, p->pipe_count))
+		if (p->pipe_count == 0 && check_for_builtin(tokens)
+			&& tokens[0]->type != STRING)
 			exec_builtin(tokens, p, env);
 		else if (setup_child(tokens, p, env, i) < 0)
 			return ;
@@ -88,9 +89,7 @@ void	execution(t_cmd **tokens, char **env)
 	t_data		*data;
 	int			i;
 
-	if ((tokens[0]->type == HERE_DOC && tokens[1]->next == EMPTY)
-		|| (tokens[0]->next == EMPTY && ft_strcmp(tokens[0]->str, "") == 0
-			&& tokens[0]->quoted == false && tokens[0]->space == false))
+	if (!only_heredocs(tokens) || !only_empty_export(tokens))
 		return ;
 	data = get_data();
 	if (data->valid != 1)

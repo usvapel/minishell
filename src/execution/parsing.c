@@ -6,7 +6,7 @@
 /*   By: jpelline <jpelline@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 13:28:50 by jpelline          #+#    #+#             */
-/*   Updated: 2025/07/19 23:58:33 by jpelline         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:52:45 by jpelline         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,13 @@
 
 static int	find_next_cmd_in_tokens(t_cmd **tokens, t_pipedata *p)
 {
-	if (tokens[p->cmd_index] && (tokens[p->cmd_index]->type == INPUT
-			|| tokens[p->cmd_index]->type == OUTPUT
-			|| tokens[p->cmd_index]->type == APPEND)
-		&& tokens[p->cmd_index]->next == BUILTIN)
-		p->cmd_index += 2;
-	while (tokens[p->cmd_index] && tokens[p->cmd_index]->type != STRING
-		&& tokens[p->cmd_index]->type != FILES
-		&& tokens[p->cmd_index]->type != BUILTIN)
-		p->cmd_index++;
+	p->cmd_index = skip_redirects(tokens, p->cmd_index);
 	if (tokens[p->cmd_index] && tokens[p->cmd_index]->type == FILES
 		&& tokens[p->cmd_index]->next == FILES)
 		tokens[p->cmd_index + 1]->type = STRING;
 	while (tokens[p->cmd_index] && tokens[p->cmd_index]->type != STRING
 		&& tokens[p->cmd_index]->type != PIPE
+		&& tokens[p->cmd_index]->type != FILES
 		&& tokens[p->cmd_index]->type != BUILTIN)
 		p->cmd_index++;
 	if (tokens[p->cmd_index] && tokens[p->cmd_index]->type == BUILTIN)
